@@ -1,0 +1,41 @@
+.terms-conditions-container > h2 {
+  font-size: 2rem;
+  border-bottom: 1px solid var(--grey);
+}
+
+.terms-conditions-container > h3 {
+  line-height: 1.3rem;
+}
+
+.terms-conditions-container > p {
+  margin: 1rem 0;
+  line-height: 1.2rem;
+  font-size: 0.9rem;
+}
+
+.terms-conditions-container > ul {
+  padding: 0;
+  list-style-type: none;
+  font-size: 0.9rem;
+}
+
+.tnc-license {
+  margin: 1rem;
+  padding: 1rem;
+  background-color: #f3f3f3;
+  border: 1px solid rgb(218, 218, 218);
+}
+
+.tnc-license > h1 {
+  margin: 0 0 1rem 0;
+}
+
+.tnc-license > h2 {
+  margin: 1.5rem 0 0.5rem 0;
+}
+
+.tnc-license > p {
+  margin-bottom: 0.5rem;
+  line-height: 1.2rem;
+  font-size: 0.9rem;
+}

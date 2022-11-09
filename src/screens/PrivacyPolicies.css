@@ -1,0 +1,14 @@
+.privacy-policies-container > h2 {
+  font-size: 2rem;
+  border-bottom: 1px solid var(--grey);
+}
+
+.privacy-policies-container > h3 {
+  line-height: 1.3rem;
+}
+
+.privacy-policies-container > p {
+  margin: 1rem 0;
+  line-height: 1.2rem;
+  font-size: 0.9rem;
+}

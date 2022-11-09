@@ -1,0 +1,11 @@
+.title-with-icon {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.title-with-icon > h1,
+h2,
+button {
+  margin: 0 1rem 0.2rem 0;
+}

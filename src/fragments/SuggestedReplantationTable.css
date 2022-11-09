@@ -1,0 +1,9 @@
+.replantation-sort-button {
+  margin: 1rem 0 0 0;
+  height: 1.8rem;
+}
+
+.replantation-sort-by,
+.replantation-sort-direction {
+  margin-bottom: 0;
+}

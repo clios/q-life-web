@@ -1,0 +1,13 @@
+.roles-responsibilities {
+  margin-bottom: 1rem;
+}
+
+.roles-responsibilities > h3 {
+  margin: 1rem 0 0.2rem 0;
+}
+
+@media (min-width: 770px) {
+  .roles-responsibilities {
+    margin-bottom: 0;
+  }
+}

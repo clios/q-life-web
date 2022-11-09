@@ -1,0 +1,26 @@
+.breadcrumbs {
+  margin-bottom: 1rem;
+}
+
+.breadcrumbs > small {
+  margin-right: 1rem;
+  cursor: pointer;
+}
+
+.breadcrumbs > small:last-child {
+  cursor: default;
+}
+
+.breadcrumbs > small:hover {
+  color: var(--blue-shade-1);
+}
+
+.breadcrumbs > small:last-child:hover {
+  color: var(--grey-shade-3);
+}
+
+.breadcrumbs > small:not(:first-child):before {
+  content: '>';
+  margin-right: 1rem;
+  cursor: default;
+}

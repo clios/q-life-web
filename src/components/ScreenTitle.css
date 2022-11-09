@@ -1,0 +1,15 @@
+.screen-title-container {
+  background-color: var(--grey-shade-3);
+  color: var(--white);
+  margin: 0 0 1rem 0;
+  padding: 1rem;
+  border-radius: 0.1rem;
+}
+
+.screen-title-container > h1 {
+  margin: 0 0 0.2rem 0;
+}
+
+.screen-title-container > p {
+  margin: 0;
+}

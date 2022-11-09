@@ -1,0 +1,13 @@
+.crop-status-card {
+  border: 1px solid var(--grey);
+  border-radius: 0.1rem;
+  padding: 1rem;
+}
+
+.crop-status-card-title {
+  margin: 0 0 1rem 0;
+}
+
+.crop-status-card-percent {
+  margin: 0 0 1rem 0;
+}

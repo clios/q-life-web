@@ -1,0 +1,14 @@
+.layout-content {
+  padding: 2rem 1rem 4rem 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--grey-tint-3) var(--light);
+  min-height: 100vh;
+  background-color: rgba(255, 255, 255, 0.75);
+}
+
+/*--  Desktop  --*/
+@media (min-width: 1024px) {
+  .layout-content {
+    padding: 2rem 1rem 4rem 16rem;
+  }
+}

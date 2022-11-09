@@ -1,0 +1,6 @@
+.blue-link {
+  color: var(--blue-shade-1);
+  font-weight: 600;
+  text-decoration-line: underline;
+  cursor: pointer;
+}

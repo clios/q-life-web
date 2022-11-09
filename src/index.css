@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Oxygen:wght@300;400;700&family=Roboto:wght@100&display=swap');
+
+body {
+  background-color: #ffffff;
+  font-family: oxygen, sans-serif;
+}
+
+p {
+  margin: 0;
+}
+
+/* Modify shirakami-ui */
+.sk-sidebar-menu > a {
+  padding: 0.5rem 0;
+}
+
+.sk-sidebar-menu > a.active {
+  padding: 0.5rem 1rem;
+}
+
+@media (min-width: 1024px) {
+  .sk-sidebar {
+    background-color: rgba(243, 243, 243, 0.836);
+  }
+  .sk-sidebar-content {
+    background-color: rgba(0, 0, 0, 0);
+  }
+}
+
+.sk-table-container {
+  margin: 1rem 0;
+  border: 1px solid #424242;
+}
+
+.sk-form-footer {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 80vw;
+}
+
+/* Modify react-confirm-alert library*/
+.react-confirm-alert {
+  border: 1px solid var(--dark);
+  padding: 1rem 1rem 2rem 1rem;
+}
+
+/* ParticlesJS */
+.particles {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: -100;
+}
+
+/* Q-LiFE MIS Custom table paginaton */
+.table-helper {
+  align-self: center;
+}
+
+.table-prev,
+.table-next {
+  margin-top: 0.1rem;
+  margin-bottom: 0;
+}

@@ -1,0 +1,14 @@
+.plantation-status-card {
+  border: 1px solid var(--grey);
+  border-radius: 0.1rem;
+  padding: 1rem;
+}
+
+.plantation-status-card-label {
+  margin: 0 0 0.5rem 0;
+}
+
+.plantation-status-card-unit {
+  display: block;
+  margin: 0 0 0.5rem 0;
+}

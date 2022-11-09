@@ -1,0 +1,8 @@
+.confirmation-box {
+  max-width: 260px;
+  margin-bottom: 2rem;
+}
+
+.confirmation-box > p {
+  margin-bottom: 1rem;
+}

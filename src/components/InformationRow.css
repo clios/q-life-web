@@ -1,0 +1,8 @@
+.information-row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.information-row > * {
+  margin-right: 2rem;
+}
