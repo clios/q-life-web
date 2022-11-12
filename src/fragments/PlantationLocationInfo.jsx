@@ -2,29 +2,46 @@
 // all application User Interface logic.
 
 // Import the local dependencies needed.
-import './PlantationLocationInfo.css'
-import address from '../address.json'
-import Breadcrumbs from '../components/Breadcrumbs'
-import ScreenTitle from '../components/ScreenTitle'
-import InformationRow from '../components/InformationRow'
-import spring from '../spring'
-import boundaries from '../boundaries'
 
-// Import the external dependencies needed.
+import './PlantationLocationInfo.css'
 import 'leaflet/dist/leaflet.css'
 import 'react-leaflet-markercluster/dist/styles.min.css'
-import React from 'react'
+
+import { Button, Field, Loader, Select } from 'shirakami-ui'
+import { GeoJSON, Marker, useMapEvent } from 'react-leaflet'
+import { LayersControl, MapContainer, TileLayer } from 'react-leaflet'
+import { animated, useSpring } from 'react-spring'
+
+import Breadcrumbs from '../components/Breadcrumbs'
+import Fullscreen from 'react-leaflet-fullscreen-plugin'
+import InformationRow from '../components/InformationRow'
 import L from 'leaflet'
+import MarkerClusterGroup from 'react-leaflet-markercluster'
+import React from 'react'
+import ReactDOMServer from 'react-dom/server'
+import ScreenTitle from '../components/ScreenTitle'
+import address from '../address.json'
+import boundaries from '../boundaries'
 import icon from 'leaflet/dist/images/marker-icon.png'
 import iconShadow from 'leaflet/dist/images/marker-shadow.png'
-import ReactDOMServer from 'react-dom/server'
-import { useSpring, animated } from 'react-spring'
-import { Button, Field, Select, Loader } from 'shirakami-ui'
-import { MapContainer, TileLayer, LayersControl } from 'react-leaflet'
-import { useMapEvent, GeoJSON, Marker } from 'react-leaflet'
-import Fullscreen from 'react-leaflet-fullscreen-plugin'
-import MarkerClusterGroup from 'react-leaflet-markercluster'
+import spring from '../spring'
 import { toJpeg } from 'html-to-image'
+
+// Import the external dependencies needed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Configure the map icon.
 let DefaultIcon = L.icon({
@@ -79,12 +96,7 @@ export default function PlantationLocationInfo(props) {
     plantations: function () {
       let locations = []
       raw.plantationsData.plantations?.forEach((item) => {
-        const { lat, lng } = utm.convertUtmToLatLng(
-          item.northing,
-          item.easting,
-          51,
-          'N'
-        )
+        const { lat, lng } = utm.convertUtmToLatLng(item.northing, item.easting, 51, 'N')
         locations.push({ lat, lng })
       })
       return locations
@@ -206,10 +218,8 @@ export default function PlantationLocationInfo(props) {
       <ScreenTitle>
         <h1>Plantation Location on the Map</h1>
         <p>
-          Here are the locations of the plantations. Only with easting and
-          northing information can be seen here on the map. There are a total of{' '}
-          {total} plantation locations from {total} beneficiaries within the
-          province.
+          Here are the locations of the plantations. Only with easting and northing information can be seen here on the map. There are a total of{' '}
+          {total} plantation locations from {total} beneficiaries within the province.
         </p>
       </ScreenTitle>
       <animated.div style={useSpring(spring.delayFadeIn)}>
@@ -234,25 +244,14 @@ export default function PlantationLocationInfo(props) {
               ))}
             </Select>
           </Field>
-          <Button
-            onClick={() => filterLocation()}
-            className="toolbar-button"
-            variant="outline">
+          <Button onClick={() => filterLocation()} className="toolbar-button" variant="outline">
             Filter
           </Button>
-          <Button
-            onClick={() => downloadMap()}
-            disabled={loading}
-            className="toolbar-button"
-            variant="outline">
+          <Button onClick={() => downloadMap()} disabled={loading} className="toolbar-button" variant="outline">
             Download JPEG
           </Button>
         </InformationRow>
-        <MapContainer
-          id="map"
-          className="map-container"
-          center={[lat, lng]}
-          zoom={zoom}>
+        <MapContainer id="map" className="map-container" center={[lat, lng]} zoom={zoom}>
           <SetViewOnClick animateRef={animateRef} />
           <Fullscreen />
           <LayersControl position="topright">
@@ -278,10 +277,7 @@ export default function PlantationLocationInfo(props) {
               {plantations.length >= 1 && (
                 <MarkerClusterGroup>
                   {plantations.map((plantation, index) => (
-                    <Marker
-                      key={index}
-                      position={[plantation.lat, plantation.lng]}
-                    />
+                    <Marker key={index} position={[plantation.lat, plantation.lng]} />
                   ))}
                 </MarkerClusterGroup>
               )}

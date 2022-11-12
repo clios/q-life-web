@@ -2,19 +2,21 @@
 // all application User Interface logic.
 
 // Import the local dependencies needed.
-import spring from '../spring'
+
+import { Button, Loader, Select } from 'shirakami-ui'
+import { Field, Form } from 'shirakami-ui'
+import { animated, useSpring } from 'react-spring'
+
+import Breadcrumbs from '../components/Breadcrumbs'
+import Cleave from 'cleave.js/react'
+import React from 'react'
+import ScreenTitle from '../components/ScreenTitle'
 import route from '../route'
 import snackbar from '../snackbar'
-import Breadcrumbs from '../components/Breadcrumbs'
-import ScreenTitle from '../components/ScreenTitle'
+import spring from '../spring'
+import { useSnackbar } from 'react-simple-snackbar'
 
 // Import the external dependencies needed.
-import React from 'react'
-import { useSpring, animated } from 'react-spring'
-import { Button, Select, Loader } from 'shirakami-ui'
-import { Field, Form } from 'shirakami-ui'
-import Cleave from 'cleave.js/react'
-import { useSnackbar } from 'react-simple-snackbar'
 
 // Make a Fragment by creating a functional component.
 export default function PlantationUpdateForm(props) {
@@ -23,6 +25,7 @@ export default function PlantationUpdateForm(props) {
 
   // Configure the cleave for number inputs.
   const numCleave = { numeral: true, numeralThousandsGroupStyle: 'thousand' }
+  const locCleave = { numeral: true, numeralThousandsGroupStyle: 'none' }
 
   // Configure the snackbar.
   const [infoSnackbar] = useSnackbar(snackbar.info)
@@ -205,31 +208,22 @@ export default function PlantationUpdateForm(props) {
     if (request_body.easting === raw.plantation.easting) {
       delete request_body.easting
     }
-    if (
-      request_body.seedlings_distributed ===
-      raw.plantation.seedlings_distributed
-    ) {
+    if (request_body.seedlings_distributed === raw.plantation.seedlings_distributed) {
       delete request_body.seedlings_distributed
     }
     if (request_body.seedlings_survived === raw.plantation.seedlings_survived) {
       delete request_body.seedlings_survived
     }
-    if (
-      request_body.seedlings_vegetative === raw.plantation.seedlings_vegetative
-    ) {
+    if (request_body.seedlings_vegetative === raw.plantation.seedlings_vegetative) {
       delete request_body.seedlings_vegetative
     }
-    if (
-      request_body.seedlings_flowering === raw.plantation.seedlings_flowering
-    ) {
+    if (request_body.seedlings_flowering === raw.plantation.seedlings_flowering) {
       delete request_body.seedlings_flowering
     }
     if (request_body.seedlings_fruiting === raw.plantation.seedlings_fruiting) {
       delete request_body.seedlings_fruiting
     }
-    if (
-      request_body.seedlings_harvesting === raw.plantation.seedlings_harvesting
-    ) {
+    if (request_body.seedlings_harvesting === raw.plantation.seedlings_harvesting) {
       delete request_body.seedlings_harvesting
     }
 
@@ -288,20 +282,13 @@ export default function PlantationUpdateForm(props) {
     <div>
       {loading && <Loader />}
       <Breadcrumbs>
-        <small onClick={() => route.to.Beneficiaries()}>
-          Registered Beneficiaries
-        </small>
-        <small onClick={() => route.to.Beneficiary(beneficiaryId)}>
-          {name}
-        </small>
+        <small onClick={() => route.to.Beneficiaries()}>Registered Beneficiaries</small>
+        <small onClick={() => route.to.Beneficiary(beneficiaryId)}>{name}</small>
         <small>Update Plantation</small>
       </Breadcrumbs>
       <ScreenTitle>
         <h1>Plantation Update Form</h1>
-        <p>
-          By editing this form, this beneficiary plantation information can be
-          updated.
-        </p>
+        <p>By editing this form, this beneficiary plantation information can be updated.</p>
       </ScreenTitle>
       <animated.div style={useSpring(spring.delayFadeIn)}>
         <Form onSubmit={submitForm}>
@@ -310,110 +297,50 @@ export default function PlantationUpdateForm(props) {
           </Field>
           <Form.Row>
             <Field label="Coffee Variety">
-              <Select
-                onChange={selectCoffeeVariety}
-                value={coffeeVariety}
-                disabled>
+              <Select onChange={selectCoffeeVariety} value={coffeeVariety} disabled>
                 <Select.Option value="robusta">Robusta</Select.Option>
               </Select>
             </Field>
             <Field label="Area (hectare)">
-              <Cleave
-                className="sk-input"
-                options={numCleave}
-                onChange={enterArea}
-                value={area}
-                size="10"
-              />
+              <Cleave className="sk-input" options={numCleave} onChange={enterArea} value={area} size="10" />
             </Field>
           </Form.Row>
           <Form.Row>
             <Field label="Distributed">
-              <Cleave
-                className="sk-input"
-                options={numCleave}
-                onChange={enterDistributed}
-                value={distributed}
-                size="10"
-              />
+              <Cleave className="sk-input" options={numCleave} onChange={enterDistributed} value={distributed} size="10" />
             </Field>
             <Field label="Survived">
-              <Cleave
-                className="sk-input"
-                options={numCleave}
-                onChange={enterSurvived}
-                value={survived}
-                size="10"
-              />
+              <Cleave className="sk-input" options={numCleave} onChange={enterSurvived} value={survived} size="10" />
             </Field>
             <Field label="Mortality">{distributed - survived || 0}</Field>
           </Form.Row>
           <Form.Row>
             <Field label="Vegetative">
-              <Cleave
-                className="sk-input"
-                options={numCleave}
-                onChange={enterVegetative}
-                value={vegetative}
-                size="10"
-              />
+              <Cleave className="sk-input" options={numCleave} onChange={enterVegetative} value={vegetative} size="10" />
             </Field>
             <Field label="Flowering">
-              <Cleave
-                className="sk-input"
-                options={numCleave}
-                onChange={enterFlowering}
-                value={flowering}
-                size="10"
-              />
+              <Cleave className="sk-input" options={numCleave} onChange={enterFlowering} value={flowering} size="10" />
             </Field>
             <Field label="Fruiting">
-              <Cleave
-                className="sk-input"
-                options={numCleave}
-                onChange={enterFruiting}
-                value={fruiting}
-                size="10"
-              />
+              <Cleave className="sk-input" options={numCleave} onChange={enterFruiting} value={fruiting} size="10" />
             </Field>
             <Field label="Harvesting">
-              <Cleave
-                className="sk-input"
-                options={numCleave}
-                onChange={enterHarvesting}
-                value={harvesting}
-                size="10"
-              />
+              <Cleave className="sk-input" options={numCleave} onChange={enterHarvesting} value={harvesting} size="10" />
             </Field>
           </Form.Row>
           <Form.Row>
             <Field label="Northing">
-              <Cleave
-                className="sk-input"
-                options={numCleave}
-                onChange={enterNorthing}
-                value={northing}
-                size="10"
-              />
+              <Cleave className="sk-input" options={locCleave} onChange={enterEasting} value={easting} size="10" />
             </Field>
             <Field label="Easting">
-              <Cleave
-                className="sk-input"
-                options={numCleave}
-                onChange={enterEasting}
-                value={easting}
-                size="10"
-              />
+              <Cleave className="sk-input" options={locCleave} onChange={enterNorthing} value={northing} size="10" />
             </Field>
           </Form.Row>
           <Form.Footer>
             <Button disabled={loading} type="submit">
               Update plantation
             </Button>
-            <Button
-              onClick={() => route.to.Beneficiary(beneficiaryId)}
-              type="button"
-              variant="outline">
+            <Button onClick={() => route.to.Beneficiary(beneficiaryId)} type="button" variant="outline">
               Cancel
             </Button>
           </Form.Footer>

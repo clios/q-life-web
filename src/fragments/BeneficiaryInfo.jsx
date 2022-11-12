@@ -1,24 +1,49 @@
 // Fragment is a functional component used for
 // all application User Interface logic.
 
-// Import the local dependencies needed.
-import spring from '../spring'
-import route from '../route'
+import 'leaflet/dist/leaflet.css'
+import 'react-leaflet-markercluster/dist/styles.min.css'
+
+import { Button, Field, Loader } from 'shirakami-ui'
+import { GeoJSON, Marker, useMapEvent } from 'react-leaflet'
+import { LayersControl, MapContainer, TileLayer } from 'react-leaflet'
+import { animated, useSpring } from 'react-spring'
+
 import Breadcrumbs from '../components/Breadcrumbs'
+import Fullscreen from 'react-leaflet-fullscreen-plugin'
+import InformationRow from '../components/InformationRow'
+import L from 'leaflet'
+import React from 'react'
+import ReactDOMServer from 'react-dom/server'
 import ScreenTitle from '../components/ScreenTitle'
 import TitleWithIcon from '../components/TitleWithIcon'
-import InformationRow from '../components/InformationRow'
-
-// Import the external dependencies needed.
-import React from 'react'
-import { useSpring, animated } from 'react-spring'
-import { Button, Field, Loader } from 'shirakami-ui'
+import boundaries from '../boundaries'
 import dayjs from 'dayjs'
+import icon from 'leaflet/dist/images/marker-icon.png'
+import iconShadow from 'leaflet/dist/images/marker-shadow.png'
+import route from '../route'
+import spring from '../spring'
+
+// Configure the map icon.
+let DefaultIcon = L.icon({
+  iconUrl: icon,
+  iconSize: [16, 30],
+  iconAnchor: [12, 25]
+  // shadowUrl: iconShadow
+})
+L.Marker.prototype.options.icon = DefaultIcon
 
 // Make a Fragment by creating a functional component.
 export default function BeneficiaryInfo(props) {
   // Destructure all the props.
   const { beneficiary, farmsData, plantationsData } = props
+
+  // Configure the map settings.
+  const [zoom, setZoom] = React.useState(13)
+
+  // Initialize the utm to latlong converter.
+  var utmObj = require('utm-latlng')
+  var utm = new utmObj()
 
   // Create a copy of the props raw value by
   // declaring it again in an object.
@@ -34,7 +59,8 @@ export default function BeneficiaryInfo(props) {
       municipal: beneficiary?.municipal,
       barangay: beneficiary?.barangay,
       created_at: beneficiary?.created_at,
-      updated_at: beneficiary?.updated_at
+      updated_at: beneficiary?.updated_at,
+      last_updated_by: beneficiary?.last_updated_by
     },
     farmsData: {
       total: farmsData?.total,
@@ -63,16 +89,14 @@ export default function BeneficiaryInfo(props) {
     updatedAt: function () {
       return dayjs(raw.beneficiary.updated_at).format('MMMM DD, YYYY hh:mm A')
     },
+    lastUpdatedBy: function () {
+      return raw.beneficiary.last_updated_by?.toUpperCase() || 'N/A'
+    },
     name: function () {
       return raw.beneficiary.name?.toUpperCase() || 'N/A'
     },
     beneficiaryAddress: function () {
-      let a = [
-        raw.beneficiary.barangay,
-        raw.beneficiary.municipal,
-        raw.beneficiary.province,
-        raw.beneficiary.region
-      ]
+      let a = [raw.beneficiary.barangay, raw.beneficiary.municipal, raw.beneficiary.province, raw.beneficiary.region]
       return a.filter(Boolean).join(', ')?.toUpperCase() || 'N/A'
     },
     birthday: function () {
@@ -84,12 +108,7 @@ export default function BeneficiaryInfo(props) {
     },
     farmAddress: function () {
       if (!raw.farmsData.farms) return 'N/A'
-      let a = [
-        raw.farmsData.farms[0]?.barangay,
-        raw.farmsData.farms[0]?.municipal,
-        raw.farmsData.farms[0]?.province,
-        raw.farmsData.farms[0]?.region
-      ]
+      let a = [raw.farmsData.farms[0]?.barangay, raw.farmsData.farms[0]?.municipal, raw.farmsData.farms[0]?.province, raw.farmsData.farms[0]?.region]
       return a.filter(Boolean).join(', ')?.toUpperCase()
     },
     coffeeVariety: function () {
@@ -136,6 +155,16 @@ export default function BeneficiaryInfo(props) {
       if (!raw.plantationsData.plantations) return 'N/A'
       return raw.plantationsData.plantations[0]?.easting
     },
+    latitude: function () {
+      if (!raw.plantationsData.plantations) return 0
+      const { lat } = utm.convertUtmToLatLng(raw.plantationsData.plantations[0]?.northing, raw.plantationsData.plantations[0]?.easting, 51, 'N')
+      return lat
+    },
+    longitude: function () {
+      if (!raw.plantationsData.plantations) return 0
+      const { lng } = utm.convertUtmToLatLng(raw.plantationsData.plantations[0]?.northing, raw.plantationsData.plantations[0]?.easting, 51, 'N')
+      return lng
+    },
     fresh: function () {
       if (!raw.farmsData.farms) return 'N/A'
       return raw.farmsData.farms[0]?.harvests_fresh
@@ -168,6 +197,7 @@ export default function BeneficiaryInfo(props) {
 
   // Initialize the states needed to render.
   const updatedAt = dv.updatedAt()
+  const lastUpdatedBy = dv.lastUpdatedBy()
   const beneficiaryId = dv.beneficiaryId()
   const farmId = dv.farmId()
   const plantationId = dv.plantationId()
@@ -187,6 +217,8 @@ export default function BeneficiaryInfo(props) {
   const harvesting = dv.harvesting()
   const northing = dv.northing()
   const easting = dv.easting()
+  const [latitude, setLatitude] = React.useState(dv.latitude())
+  const [longitude, setLongitude] = React.useState(dv.longitude())
   const fresh = dv.fresh()
   const dry = dv.dry()
   const gcb = dv.gcb()
@@ -200,6 +232,9 @@ export default function BeneficiaryInfo(props) {
     props.onDeleteBeneficiary()
   }
 
+  React.useState(() => {}, [])
+  const { lat, lng } = utm.convertUtmToLatLng(northing, easting, 51, 'Q')
+
   // Return components to be rendered.
   return (
     <div>
@@ -207,23 +242,18 @@ export default function BeneficiaryInfo(props) {
       {farmsData == undefined && <Loader />}
       {plantationsData == undefined && <Loader />}
       <Breadcrumbs>
-        <small onClick={() => route.to.Beneficiaries()}>
-          Registered Beneficiaries
-        </small>
+        <small onClick={() => route.to.Beneficiaries()}>Registered Beneficiaries</small>
         <small>{name}</small>
       </Breadcrumbs>
       <ScreenTitle>
         <h1>{name}</h1>
-        <p>A beneficiary of Q-LiFE UEP. Last updated on {updatedAt}.</p>
+        <p>Updated By: {lastUpdatedBy}</p>
+        <p>Updated At: {updatedAt}</p>
       </ScreenTitle>
       <animated.div style={useSpring(spring.delayFadeIn)}>
         <TitleWithIcon>
-          <h2>Personal Information</h2>
-          <Button
-            onClick={() => route.to.BeneficiaryUpdate(beneficiaryId)}
-            variant="icon"
-            icon="edit"
-          />
+          <h2>1. Personal Information</h2>
+          <Button onClick={() => route.to.BeneficiaryUpdate(beneficiaryId)} variant="icon" icon="edit" />
         </TitleWithIcon>
         <InformationRow>
           <Field label="Name">{name}</Field>
@@ -232,41 +262,19 @@ export default function BeneficiaryInfo(props) {
           <Field label="Civil Status">{civilStatus}</Field>
         </InformationRow>
         <TitleWithIcon>
-          <h2>Farm Information</h2>
+          <h2>2. Farm Information</h2>
           {!farmAddress ? (
-            <Button
-              onClick={() => route.to.FarmCreate(beneficiaryId)}
-              variant="icon"
-              icon="plus"
-            />
+            <Button onClick={() => route.to.FarmCreate(beneficiaryId)} variant="icon" icon="plus" />
           ) : (
-            <Button
-              onClick={() => route.to.FarmUpdate(beneficiaryId, farmId)}
-              variant="icon"
-              icon="edit"
-            />
+            <Button onClick={() => route.to.FarmUpdate(beneficiaryId, farmId)} variant="icon" icon="edit" />
           )}
         </TitleWithIcon>
-        <InformationRow>
-          {<Field label="Address">{farmAddress || 'N/A'}</Field>}
-        </InformationRow>
+        <InformationRow>{<Field label="Address">{farmAddress || 'N/A'}</Field>}</InformationRow>
         <TitleWithIcon>
-          <h2>Plantation Information</h2>
-          {farmAddress && !coffeeVariety && (
-            <Button
-              onClick={() => route.to.PlantationCreate(beneficiaryId, farmId)}
-              variant="icon"
-              icon="plus"
-            />
-          )}
+          <h2>3. Plantation Information</h2>
+          {farmAddress && !coffeeVariety && <Button onClick={() => route.to.PlantationCreate(beneficiaryId, farmId)} variant="icon" icon="plus" />}
           {farmAddress && coffeeVariety && (
-            <Button
-              onClick={() =>
-                route.to.PlantationUpdate(beneficiaryId, farmId, plantationId)
-              }
-              variant="icon"
-              icon="edit"
-            />
+            <Button onClick={() => route.to.PlantationUpdate(beneficiaryId, farmId, plantationId)} variant="icon" icon="edit" />
           )}
         </TitleWithIcon>
         {farmAddress ? (
@@ -285,24 +293,49 @@ export default function BeneficiaryInfo(props) {
               <Field label="Harvesting">{harvesting || 'N/A'}</Field>
             </InformationRow>
             <InformationRow>
-              <Field label="Northing">{northing || 'N/A'}</Field>
-              <Field label="Easting">{easting || 'N/A'}</Field>
+              <Field label="Northing">{easting || 'N/A'}</Field>
+              <Field label="Easting">{northing || 'N/A'}</Field>
             </InformationRow>
+            {console.log(lat)}
+            {lat ? (
+              <MapContainer id="map" className="map-container-plantation" center={[lat, lng]} zoom={zoom}>
+                <Fullscreen />
+                <TileLayer
+                  attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <GeoJSON
+                  data={boundaries}
+                  style={{
+                    fillOpacity: 0.1,
+                    weight: 1,
+                    color: '#eb8934'
+                  }}
+                  onEachFeature={(feature, layer) => {
+                    const popupContent = ReactDOMServer.renderToString(
+                      <p>
+                        {feature.properties.BRGY}, {feature.properties.MUN}
+                      </p>
+                    )
+                    layer.bindPopup(popupContent)
+                  }}></GeoJSON>
+                <Marker position={[lat, lng]} />
+              </MapContainer>
+            ) : (
+              <InformationRow>
+                <p className="text-red">No Location Found</p>
+              </InformationRow>
+            )}
           </React.Fragment>
         ) : (
           <InformationRow>
             <Field>Please add farm address first</Field>
           </InformationRow>
         )}
+
         <TitleWithIcon>
-          <h2>Harvest Information</h2>
-          {farmAddress && (
-            <Button
-              onClick={() => route.to.HarvestUpdate(beneficiaryId, farmId)}
-              variant="icon"
-              icon="edit"
-            />
-          )}
+          <h2>4. Harvest Information</h2>
+          {farmAddress && <Button onClick={() => route.to.HarvestUpdate(beneficiaryId, farmId)} variant="icon" icon="edit" />}
         </TitleWithIcon>
         {farmAddress ? (
           <InformationRow>
@@ -316,16 +349,8 @@ export default function BeneficiaryInfo(props) {
           </InformationRow>
         )}
         <TitleWithIcon>
-          <h2>Pest and Disease Information</h2>
-          {farmAddress && (
-            <Button
-              onClick={() =>
-                route.to.PestDiseaseUpdate(beneficiaryId, farmId, plantationId)
-              }
-              variant="icon"
-              icon="edit"
-            />
-          )}
+          <h2>5. Pest and Disease Information</h2>
+          {farmAddress && <Button onClick={() => route.to.PestDiseaseUpdate(beneficiaryId, farmId, plantationId)} variant="icon" icon="edit" />}
         </TitleWithIcon>
         <InformationRow>
           {farmAddress ? (
@@ -341,10 +366,7 @@ export default function BeneficiaryInfo(props) {
             </InformationRow>
           )}
         </InformationRow>
-        <Field label="Data Privacy Consent">
-          This beneficiary has given permission for the system to use the
-          information in accordance with the Data Privacy Act of 2012.
-        </Field>
+        <TitleWithIcon />
         <Button onClick={deleteBeneficiary} variant="outline">
           Delete beneficiary
         </Button>

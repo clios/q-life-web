@@ -2,21 +2,24 @@
 // all application User Interface logic.
 
 // Import the local dependencies needed.
-import './BeneficiariesTable.css'
-import address from '../address.json'
-import spring from '../spring'
-import route from '../route'
-import Breadcrumbs from '../components/Breadcrumbs'
-import ScreenTitle from '../components/ScreenTitle'
-import TitleWithIcon from '../components/TitleWithIcon'
-import InformationRow from '../components/InformationRow'
 
-// Import the external dependencies needed.
-import React from 'react'
-import { useSpring, animated } from 'react-spring'
+import './BeneficiariesTable.css'
+
 import { Button, Input, Loader, Select } from 'shirakami-ui'
 import { Field, Table } from 'shirakami-ui'
+import { animated, useSpring } from 'react-spring'
+
+import Breadcrumbs from '../components/Breadcrumbs'
+import InformationRow from '../components/InformationRow'
+import React from 'react'
+import ScreenTitle from '../components/ScreenTitle'
+import TitleWithIcon from '../components/TitleWithIcon'
+import address from '../address.json'
 import dayjs from 'dayjs'
+import route from '../route'
+import spring from '../spring'
+
+// Import the external dependencies needed.
 
 // Make a Fragment by creating a functional component.
 export default function BeneficiariesTable(props) {
@@ -199,15 +202,9 @@ export default function BeneficiariesTable(props) {
         <ScreenTitle>
           <TitleWithIcon>
             <h1>Table of Registered Beneficiaries</h1>
-            <Button
-              onClick={() => route.to.BeneficiaryCreate()}
-              variant="icon"
-              icon="plus"
-            />
+            <Button onClick={() => route.to.BeneficiaryCreate()} variant="icon" icon="plus" />
           </TitleWithIcon>
-          <p>
-            List of {total} farmers registered as beneficiaries of Q-LiFE UEP.
-          </p>
+          <p>List of {total} farmers registered as beneficiaries of Q-LiFE UEP.</p>
         </ScreenTitle>
       </animated.div>
       <animated.div style={useSpring(spring.delayFadeIn)}>
@@ -235,10 +232,7 @@ export default function BeneficiariesTable(props) {
               ))}
             </Select>
           </Field>
-          <Button
-            onClick={() => filterTable()}
-            className="beneficiary-search-button"
-            variant="outline">
+          <Button onClick={() => filterTable()} className="beneficiary-search-button" variant="outline">
             Search
           </Button>
         </InformationRow>
@@ -255,20 +249,11 @@ export default function BeneficiariesTable(props) {
               <Select.Option value="desc">Descending</Select.Option>
             </Select>
           </Field>
-          <Button
-            onClick={() => sortTable()}
-            className="beneficiary-sort-button"
-            variant="outline">
+          <Button onClick={() => sortTable()} className="beneficiary-sort-button" variant="outline">
             Sort
           </Button>
         </InformationRow>
-        <Table
-          headerCells={[
-            { name: 'Name' },
-            { name: 'Barangay' },
-            { name: 'Municipal' },
-            { name: 'Last Update' }
-          ]}>
+        <Table headerCells={[{ name: 'Name' }, { name: 'Barangay' }, { name: 'Municipal' }, { name: 'Last Update' }]}>
           {beneficiaries.map((i) => (
             <Table.Row key={i.id} onClick={() => route.to.Beneficiary(i.id)}>
               <Table.Cell>{i.name}</Table.Cell>
@@ -279,26 +264,12 @@ export default function BeneficiariesTable(props) {
           ))}
         </Table>
         <InformationRow>
-          <small className="table-helper">
-            Total beneficiaries in the table: {total}
-          </small>
-          <Button
-            onClick={() => prevPage()}
-            disabled={page <= 1}
-            className="table-prev"
-            variant="icon"
-            icon="chevron-left"
-          />
+          <small className="table-helper">Total beneficiaries in the table: {total}</small>
+          <Button onClick={() => prevPage()} disabled={page <= 1} className="table-prev" variant="icon" icon="chevron-left" />
           <small className="table-helper">
             Page {page} of {Math.ceil(total / limit)}
           </small>
-          <Button
-            onClick={() => nextPage()}
-            disabled={page >= Math.ceil(total / limit)}
-            className="table-next"
-            variant="icon"
-            icon="chevron-right"
-          />
+          <Button onClick={() => nextPage()} disabled={page >= Math.ceil(total / limit)} className="table-next" variant="icon" icon="chevron-right" />
         </InformationRow>
       </animated.div>
     </animated.div>
