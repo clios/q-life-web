@@ -5,13 +5,14 @@
 // provide the final output.
 
 // Import the local dependencies needed.
-import useRBAC from '../hooks/useRBAC'
-import PlantationLocationInfo from '../fragments/PlantationLocationInfo'
+
 import GetPlantationLocation from '../api/GetPlantationLocation'
+import PlantationLocationInfo from '../fragments/PlantationLocationInfo'
+import React from 'react'
 import policy from '../policy'
+import useRBAC from '../hooks/useRBAC'
 
 // Import the external dependency needed.
-import React from 'react'
 
 function PlantationLocation() {
   // To implement Role-Based Access Control, if
@@ -22,8 +23,6 @@ function PlantationLocation() {
 
   // Default values for query params
   const dv = {
-    limit: 1000,
-    page: 1,
     municipal: '',
     barangay: ''
   }
@@ -40,15 +39,11 @@ function PlantationLocation() {
   function makeQueryParams() {
     // Create an object for query params.
     let qp = {
-      limit: `limit=${limit}`,
-      page: `page=${page}`,
       municipal: `municipal=${municipal}`,
       barangay: `barangay=${barangay}`
     }
 
     // Filter out empty query params.
-    if (qp.limit === 'limit=') delete qp.limit
-    if (qp.page === 'page=') delete qp.page
     if (qp.municipal === 'municipal=') delete qp.municipal
     if (qp.barangay === 'barangay=') delete qp.barangay
 
@@ -63,20 +58,12 @@ function PlantationLocation() {
   // Function for new API request that needs an
   // update of query params.
   function updateQueryParams(queryParams) {
-    setLimit(queryParams.limit)
-    setPage(queryParams.page)
     setMunicipal(queryParams.municipal)
     setBarangay(queryParams.barangay)
   }
 
   // Pass the props needed by the Fragment.
-  return (
-    <PlantationLocationInfo
-      plantationsData={getPlantationLocationResponse?.data}
-      queryParams={dv}
-      onNewQueryParams={updateQueryParams}
-    />
-  )
+  return <PlantationLocationInfo plantationsData={getPlantationLocationResponse?.data} queryParams={dv} onNewQueryParams={updateQueryParams} />
 }
 
 export default PlantationLocation

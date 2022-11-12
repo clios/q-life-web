@@ -296,7 +296,6 @@ export default function BeneficiaryInfo(props) {
               <Field label="Northing">{easting || 'N/A'}</Field>
               <Field label="Easting">{northing || 'N/A'}</Field>
             </InformationRow>
-            {console.log(lat)}
             {lat ? (
               <MapContainer id="map" className="map-container-plantation" center={[lat, lng]} zoom={zoom}>
                 <Fullscreen />

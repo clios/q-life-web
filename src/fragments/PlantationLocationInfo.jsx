@@ -1,14 +1,12 @@
 // Fragment is a functional component used for
 // all application User Interface logic.
 
-// Import the local dependencies needed.
-
 import './PlantationLocationInfo.css'
 import 'leaflet/dist/leaflet.css'
 import 'react-leaflet-markercluster/dist/styles.min.css'
 
 import { Button, Field, Loader, Select } from 'shirakami-ui'
-import { GeoJSON, Marker, useMapEvent } from 'react-leaflet'
+import { GeoJSON, Marker, Popup, useMapEvent } from 'react-leaflet'
 import { LayersControl, MapContainer, TileLayer } from 'react-leaflet'
 import { animated, useSpring } from 'react-spring'
 
@@ -16,6 +14,7 @@ import Breadcrumbs from '../components/Breadcrumbs'
 import Fullscreen from 'react-leaflet-fullscreen-plugin'
 import InformationRow from '../components/InformationRow'
 import L from 'leaflet'
+import { Link } from '@reach/router'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
@@ -26,22 +25,6 @@ import icon from 'leaflet/dist/images/marker-icon.png'
 import iconShadow from 'leaflet/dist/images/marker-shadow.png'
 import spring from '../spring'
 import { toJpeg } from 'html-to-image'
-
-// Import the external dependencies needed.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Configure the map icon.
 let DefaultIcon = L.icon({
@@ -54,16 +37,12 @@ L.Marker.prototype.options.icon = DefaultIcon
 export default function PlantationLocationInfo(props) {
   // Desctructure all the props.
   const { plantationsData, queryParams } = props
+
   // Create a copy of the props raw value by
   // declaring it again in an object.
   const raw = {
-    plantationsData: {
-      total: plantationsData?.total,
-      plantations: plantationsData?.plantations
-    },
+    plantationsData: plantationsData,
     queryParams: {
-      limit: queryParams.limit,
-      page: queryParams.page,
       municipal: queryParams.municipal,
       barangay: queryParams.barangay
     }
@@ -90,14 +69,11 @@ export default function PlantationLocationInfo(props) {
   // Apply UI logics for default values by
   // creating functions inside an object.
   const dv = {
-    total: function () {
-      return raw.plantationsData.total || 0
-    },
     plantations: function () {
       let locations = []
-      raw.plantationsData.plantations?.forEach((item) => {
+      raw.plantationsData?.forEach((item) => {
         const { lat, lng } = utm.convertUtmToLatLng(item.northing, item.easting, 51, 'N')
-        locations.push({ lat, lng })
+        locations.push({ lat, lng, beneficiary_name: item.beneficiary_name, beneficiary_id: item.beneficiary_id })
       })
       return locations
     },
@@ -136,7 +112,6 @@ export default function PlantationLocationInfo(props) {
   }
 
   // Initialize the states needed to render.
-  const total = dv.total()
   const plantations = dv.plantations()
   const region = dv.region()
   const province = dv.province()
@@ -217,10 +192,7 @@ export default function PlantationLocationInfo(props) {
       </Breadcrumbs>
       <ScreenTitle>
         <h1>Plantation Location on the Map</h1>
-        <p>
-          Here are the locations of the plantations. Only with easting and northing information can be seen here on the map. There are a total of{' '}
-          {total} plantation locations from {total} beneficiaries within the province.
-        </p>
+        <p>Only with easting and northing information can be seen here on the map.</p>
       </ScreenTitle>
       <animated.div style={useSpring(spring.delayFadeIn)}>
         <InformationRow>
@@ -277,7 +249,11 @@ export default function PlantationLocationInfo(props) {
               {plantations.length >= 1 && (
                 <MarkerClusterGroup>
                   {plantations.map((plantation, index) => (
-                    <Marker key={index} position={[plantation.lat, plantation.lng]} />
+                    <Marker key={index} position={[plantation.lat, plantation.lng]}>
+                      <Popup>
+                        <Link to={`/beneficiaries/${plantation.beneficiary_id}`}>{plantation.beneficiary_name}</Link>
+                      </Popup>
+                    </Marker>
                   ))}
                 </MarkerClusterGroup>
               )}

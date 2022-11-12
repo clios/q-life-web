@@ -2,9 +2,10 @@
 // an HTTP request then return a response.
 
 // Import the local dependencies needed.
-import useEnv from '../hooks/useEnv'
-import useDevLogs from '../hooks/useDevLogs'
+
 import localPlantationLocation from '../locals/localPlantationLocation'
+import useDevLogs from '../hooks/useDevLogs'
+import useEnv from '../hooks/useEnv'
 import useGetRequest from '../hooks/useGetRequest'
 
 // Make an API by creating a function.
@@ -13,7 +14,7 @@ export default function GetPlantationLocation(queryParams) {
   const { API_QLIFE, LOCAL_MODE } = useEnv()
 
   // Configure the HTTP request.
-  const path = '/plantations?' + queryParams
+  const path = '/locations/plantation?' + queryParams
   const url = API_QLIFE + path
 
   // If local mode is true, return local data.
